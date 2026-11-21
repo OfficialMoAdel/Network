@@ -32,9 +32,8 @@
 
 ### الطريقة الأولى: تحميل المستودع كـ Vault مستقل
 1. حمّل المشروع عبر زر **Code → Download ZIP** أو باستخدام Git:
-   ```bash
-   git clone https://github.com/OfficialMoAdel/Network.git
-
+```bash
+git clone https://github.com/OfficialMoAdel/Network.git
 ```
 
 2. افتح برنامج **Obsidian**.
@@ -62,9 +61,9 @@
 
 1. اعمل **Fork** للمستودع.
 2. أنشئ فرعًا جديدًا لتعديلاتك:
+
 ```bash
 git checkout -b add-new-topic
-
 ```
 
 
@@ -78,6 +77,3 @@ git checkout -b add-new-topic
 
 إذا وجدت هذا المرجع مفيدًا لك في المذاكرة أو العمل، لا تنسَ وضع نجمة (**Star ⭐**) للمستودع ومشاركته مع زملائك لتعم الفائدة.
 
-```
-
----
