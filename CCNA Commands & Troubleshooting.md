@@ -14,7 +14,7 @@ tags:
   - troubleshooting
   - show-commands
 date: 2026-11-10
-updated: 2026-11-14
+updated: 2026-11-25
 status: complete
 ---
 
@@ -23,7 +23,7 @@ status: complete
 > [!info] عن هذه الملاحظة
 > مرجع موحّد (دمج ملف الأوامر Part 1 + Part 2 مع ملف استكشاف الأخطاء):
 > ==Part A== الأوامر حسب الموضوع — ==Part B== استكشاف الأخطاء حسب الأعراض (40 أمرًا).
-> النظرية واللابات: [[CCNA Theory & Labs]] — نظرية STP: [[STP (Spanning Tree Protocol)]]
+> الفهرس الكامل للشرح واللابات: [[00 - Cisco CCNA MOC]] — النظرية واللابات: [[CCNA Theory & Labs]] — نظرية STP: [[STP (Spanning Tree Protocol)]]
 
 ## الفهرس
 
@@ -35,6 +35,7 @@ status: complete
 - [[#5) IPv4, Static Routing & RIPv2]]
 - [[#6) OSPF]]
 - [[#7) EIGRP]]
+- [[#7B) BGP (eBGP Basics)]]
 - [[#8) IPv6]]
 - [[#9) ACLs — Complete Reference]]
 - [[#10) DHCP, NAT & Management]]
@@ -221,6 +222,22 @@ R1(config-subif)#encapsulation dot1q 20
 R1(config-subif)#ip address 192.168.20.1 255.255.255.0
 ```
 
+#### 2.3b Multilayer Switch Inter-VLAN Routing (SVI)
+
+```text
+MLS(config)#ip routing
+MLS(config)#interface vlan 10
+MLS(config-if)#ip address 192.168.10.1 255.255.255.0
+MLS(config-if)#no shutdown
+MLS(config)#interface vlan 20
+MLS(config-if)#ip address 192.168.20.1 255.255.255.0
+MLS(config-if)#no shutdown
+```
+
+> [!note] MLS Trunk Encapsulation (3560/3650)
+> قبل `switchport mode trunk` على سويتش Multilayer، يجب تحديد التغليف أولاً:
+> `MLS(config-if)#switchport trunk encapsulation dot1q`
+
 #### 2.4 التحقق من الواجهات
 
 ```text
@@ -266,7 +283,7 @@ SW1(config-if)#switchport trunk allowed vlan add 10   (options: add, remove, all
 
 ```text
 SW1(config-if)#shutdown                (administratively disable unused interfaces)
-SW1(config-if)#nonegotiate             (prevent trunking by disabling auto negotiation)
+SW1(config-if)#switchport nonegotiate  (prevent trunking by disabling auto negotiation)
 SW1(config-if)#switchport mode access  (or hardcode the port as an access port)
 SW1(config-if)#switchport access vlan 222   (assign the port to an unused VLAN)
 ```
@@ -321,9 +338,19 @@ SW1(config-if)#spanning-tree guard loop
 #### 4.3 EtherChannel
 
 ```text
-SW1(config-if)#channel-group 1 mode active   (options: active, auto, desirable, on)
+SW1(config-if)#channel-group 1 mode active   (options: active, passive, auto, desirable, on)
 SW1(config)#interface port-channel 1
 SW1(config-if)#switchport mode trunk
+```
+
+**Layer 3 EtherChannel (Multilayer Switch — No Trunk):**
+
+```text
+MLS(config)#interface range fa0/1 - 3
+MLS(config-if-range)#no switchport
+MLS(config-if-range)#channel-group 1 mode on
+MLS(config)#interface port-channel 1
+MLS(config-if)#ip address 10.10.10.1 255.255.255.0
 ```
 
 #### 4.4 CDP & LLDP
@@ -379,7 +406,7 @@ R1(config)#ip route 0.0.0.0 0.0.0.0 199.1.1.1           (default route)
 R1(config)#router rip
 R1(config-router)#version 2
 R1(config-router)#network 10.0.0.0   (written as an original class A)
-R1(config-router)#no autosummary
+R1(config-router)#no auto-summary
 R1(config-router)#passive-interface serial 0/0
 ```
 
@@ -454,7 +481,7 @@ R1(config-router)#default-information originate
 Configure maximum equal-cost paths: (Optional)
 
 ```text
-R1(config-router)#maximum paths 6
+R1(config-router)#maximum-paths 6
 ```
 
 #### 6.2 OSPF Authentication
@@ -500,7 +527,7 @@ R1(config-router)#network 0.0.0.0 255.255.255.255
 Disable auto summarization / Disable EIGRP on a specific interface: (Optional)
 
 ```text
-R1(config-router)#no autosummary
+R1(config-router)#no auto-summary
 R1(config-router)#passive-interface serial 0/0
 ```
 
@@ -521,7 +548,7 @@ R1(config-if)#ip hold-time eigrp 121 10
 Impacting metric calculations by tuning BW and delay of the interface: (Optional)
 
 ```text
-R1(config-if)#bandwidth 265   (kbps)
+R1(config-if)#bandwidth 256   (kbps)
 R1(config-if)#delay 120       (tens of microseconds)
 ```
 
@@ -572,6 +599,18 @@ R1#show ip eigrp traffic   (Lists statistics on numbers of EIGRP messages sent a
 
 **باقي أوامر التحقق:** [[#EIGRP Troubleshooting]]
 
+### 7B) BGP (eBGP Basics)
+#ccna/bgp
+
+```text
+R1(config)#router bgp 1
+R1(config-router)#neighbor 10.10.10.2 remote-as 2
+R1(config-router)#network 10.10.10.0 mask 255.255.255.252
+R1(config-router)#network 192.168.1.0 mask 255.255.255.0
+```
+
+**التحقق واستكشاف الأخطاء:** [[#BGP Troubleshooting]]
+
 ### 8) IPv6
 #ccna/ipv6
 
@@ -599,6 +638,27 @@ show ipv6 route
 show ipv6 neighbors
 ping 2001:db8:1::2
 traceroute ipv6 2001:4860:4860::8888
+```
+
+#### 8.4 OSPFv3 (OSPF for IPv6)
+
+```text
+R1(config)#ipv6 unicast-routing
+R1(config)#ipv6 router ospf 1
+R1(config-rtr)#router-id 10.10.10.1
+R1(config)#interface fa0/0
+R1(config-if)#ipv6 ospf 1 area 0
+```
+
+#### 8.5 EIGRP for IPv6 (EIGRPv6)
+
+```text
+R1(config)#ipv6 unicast-routing
+R1(config)#ipv6 router eigrp 10
+R1(config-rtr)#eigrp router-id 10.10.10.1
+R1(config-rtr)#no shutdown
+R1(config)#interface fa0/0
+R1(config-if)#ipv6 eigrp 10
 ```
 
 ### 9) ACLs — Complete Reference
@@ -839,6 +899,9 @@ SW1#show port-security interface fa0/5
 ### 12) WAN — PPP & Frame Relay
 #ccna/ppp #ccna/frame-relay
 
+> [!note] Exam Scope Note
+> **PPP** and **Frame Relay** are classic/legacy CCNA WAN topics—valuable for reference on older Cisco infrastructure and labs.
+
 #### 12.1 PPP Configuration
 
 ```text
@@ -874,6 +937,18 @@ ALPHA(config-if)#ppp pap sent-username ALPHA password XYZ
 | R1#debug ppp authentication | Displays the authentication process of PPP in real time |
 
 #### 12.5 Frame Relay — Multipoint (one subnet)
+
+```mermaid
+flowchart LR
+    R1["R1 (Hub)<br/>Multipoint: 1.1.1.1/24<br/>P2P .102: 1.1.1.1 | .103: 2.2.2.1"]
+    FR(("Frame Relay<br/>Cloud"))
+    R2["R2 (Spoke 1)<br/>1.1.1.2/24"]
+    R3["R3 (Spoke 2)<br/>Multipoint: 1.1.1.3/24<br/>P2P .301: 2.2.2.2/24"]
+
+    R1 ---|"DLCI 102 / 103"| FR
+    FR ---|"DLCI 201"| R2
+    FR ---|"DLCI 301"| R3
+```
 
 ```text
 R1(config)#interface serial 0/0
