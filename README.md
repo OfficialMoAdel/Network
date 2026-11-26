@@ -1,5 +1,8 @@
 # 🌐 CCNA Study Notes & Troubleshooting Reference (Obsidian Vault)
 
+<img width="2752" height="1536" alt="Gemini_Generated_Image_of50c4of50c4of50" src="https://github.com/user-attachments/assets/87b2e587-f0ad-4e52-9bd6-74f8adcacac8" />
+
+
 مرجع مفتوح المصدر باللغتين العربية والإنجليزية لدارسي شهادة **CCNA** ومهندسي الشبكات، صُمم ليكون دليلاً سريعًا للمذاكرة والمراجعة اليومية دون نسيان الأوامر أو المفاهيم الأساسية، مع التركيز على الجانب العملي واستكشاف الأخطاء (Troubleshooting).
 
 ---
